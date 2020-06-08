@@ -1,0 +1,82 @@
+<html>
+<head>
+	<title>사진 변환</title>
+</head>
+<body>
+
+<div>
+	<input type="file" id="imageFile" multiple>
+	<input type="button" value="resize" id="resizeImage_btn">
+	<input type="button" value="download" id="download">
+</div>
+<div id="result">
+</div>
+
+
+<script type="text/javascript">
+
+let downPossible = [];
+const result = document.querySelector("#result");
+
+function resizeImage() {
+	downPossible = [];
+	result.innerHTML = "";
+	let files = document.getElementById('imageFile').files;
+	let len = files.length;
+	let imgs = [];
+	let reader = [];
+	let downs = [];
+	const width = 113.385826772
+	const height = 151.181102362
+
+	for(let i=0;i<len;i++){
+		imgs.push(document.createElement("img"));
+		downs.push(document.createElement("a"));
+		reader.push(new FileReader());
+		reader[i].onload = e => {
+			imgs[i].src = e.target.result;
+			
+			imgs[i].width="" + width;
+			imgs[i].height="" + height;
+			result.appendChild(imgs[i]);
+
+			let canvas = document.createElement("canvas");
+			let ctx = canvas.getContext("2d");
+
+			canvas.width = width;
+			canvas.height = height;
+			ctx.fillStyle = "#FFFFFF";
+			ctx.fillRect(0, 0, width, height);
+			ctx.drawImage(imgs[i], 0, 0, width, height);
+			result.appendChild(canvas);
+			downs[i].href = canvas.toDataURL(files[i].type);
+			downs[i].download = files[i].name.split(".")[0]+".jpg";
+			downPossible.push(downs[i]);
+			//downs[i].click();
+		};
+		
+	}
+
+	for(let i=0;i<len;i++){
+		setTimeout(() => {
+			reader[i].readAsDataURL(files[i]);
+		}, i * 50);
+	}
+}
+
+const download = () => {
+console.log(downPossible);
+	let len = downPossible.length;
+	for(let i=0;i<len;i++){
+		setTimeout(() => {
+			downPossible[i].click();
+		}, i * 100);
+	}
+}
+
+document.querySelector("#resizeImage_btn").addEventListener("click", resizeImage);
+document.querySelector("#download").addEventListener("click", download);
+
+</script>	
+</body>
+</html>
